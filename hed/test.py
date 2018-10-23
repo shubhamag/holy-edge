@@ -16,10 +16,12 @@ from hed.utils.io import IO
 
 class HEDTester():
 
-    def __init__(self, config_file):
+    def __init__(self, config_file,infile,outdir):
 
         self.io = IO()
         self.init = True
+        self.infile = infile
+        self.outdir = outdir
 
         try:
             pfile = open(config_file)
@@ -56,13 +58,17 @@ class HEDTester():
         self.model.setup_testing(session)
 
         filepath = os.path.join(self.cfgs['download_path'], self.cfgs['testing']['list'])
+        if(self.infile is not None):
+            filepath = self.infile
         train_list = self.io.read_file_list(filepath)
 
-        self.io.print_info('Writing PNGs at {}'.format(self.cfgs['test_output']))
+        # self.io.print_info('Writing PNGs at {}'.format(self.cfgs['test_output']))
+        self.io.print_info('Writing PNGs at {}'.format(self.outdir))
 
         for idx, img in enumerate(train_list):
 
-            test_filename = os.path.join(self.cfgs['download_path'], self.cfgs['testing']['dir'], img)
+            # test_filename = os.path.join(self.cfgs['download_path'], self.cfgs['testing']['dir'], img)
+            test_filename = img
             im = self.fetch_image(test_filename)
 
             edgemap = session.run(self.model.predictions, feed_dict={self.model.images: [im]})
@@ -84,7 +90,8 @@ class HEDTester():
             em = np.tile(em, [1, 1, 3])
 
             em = Image.fromarray(np.uint8(em))
-            em.save(os.path.join(self.cfgs['test_output'], 'testing-{}-{:03}.png'.format(index, idx)))
+            em.save(os.path.join(self.outdir, 'testing-{}-{:03}.png'.format(index, idx)))
+            # em.save(os.path.join(self.cfgs['test_output'], 'testing-{}-{:03}.png'.format(index, idx)))
 
     def fetch_image(self, test_image):
 

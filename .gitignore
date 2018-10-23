@@ -45,7 +45,7 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
-
+hed/models/vgg16.npy
 # Translations
 *.mo
 *.pot
